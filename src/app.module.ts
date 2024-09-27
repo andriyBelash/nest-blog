@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminModule } from './modules/admin/admin.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { GlobalFormDataInterceptor } from './common/utils/globa-form-interceptor';
 
 @Module({
   imports: [
@@ -17,6 +19,12 @@ import { AdminModule } from './modules/admin/admin.module';
       migrationsRun: false,
     }),
     AdminModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: GlobalFormDataInterceptor,
+    },
   ],
 })
 export class AppModule {}
