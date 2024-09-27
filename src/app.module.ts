@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminModule } from './modules/admin/admin.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalFormDataInterceptor } from './common/utils/globa-form-interceptor';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -19,6 +20,9 @@ import { GlobalFormDataInterceptor } from './common/utils/globa-form-interceptor
       migrationsRun: false,
     }),
     AdminModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
   ],
   providers: [
     {
