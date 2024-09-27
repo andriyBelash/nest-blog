@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -11,7 +11,7 @@ import { AdminModule } from './admin/admin.module';
       username: 'root',
       password: '',
       database: 'nest',
-      entities: [__dirname + 'entities/**/*.entity{.ts,.js}'],
+      entities: [__dirname + '/entities/**/*.entity{.ts,.js}'],
       synchronize: false,
       migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
       migrationsRun: false,
