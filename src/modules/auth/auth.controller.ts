@@ -33,7 +33,6 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refreshTokens(@Body() body: RefreshTokenDto) {
-    console.log(body.token);
     if (!body.token) {
       throw new UnauthorizedException('Refresh token is required');
     }

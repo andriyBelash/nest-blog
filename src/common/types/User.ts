@@ -1,4 +1,5 @@
 import { Role } from './enum';
+import { PaginationData } from './Shared';
 
 export interface IUser {
   id: number;
@@ -6,6 +7,8 @@ export interface IUser {
   email: string;
   role: Role;
   avatar_url: string;
-  created_at: string;
-  update_at: string;
+  created_at: Date;
+  updated_at: Date;
 }
+
+export type IUsersList = PaginationData<IUser[]>;
