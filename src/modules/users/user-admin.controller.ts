@@ -17,10 +17,10 @@ import {
 } from '@nestjs/common';
 import { AdminController } from 'src/common/utils/controllers';
 import { UsersService } from './users.service';
-import { PaginationDto } from 'src/common/filter/paginate.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SearchUsers } from './dto/search-users.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @AdminController('users')
@@ -28,8 +28,9 @@ export class AdminUsersController {
   constructor(private userService: UsersService) {}
   @Get('')
   @UseGuards(AuthGuard)
-  async getUsers(@Query() pagination: PaginationDto) {
-    return this.userService.findAll(pagination);
+  async getUsers(@Query() query: SearchUsers) {
+    console.log(query);
+    return this.userService.findAll(query);
   }
 
   @Post('')

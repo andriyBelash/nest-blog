@@ -1,10 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
-import { PaginationDto } from 'src/common/filter/paginate.dto';
-import { paginate } from 'src/common/utils/paginate.utils';
+import { SearchUsers } from './dto/search-users.dto';
 import { instanceToPlain } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
 import { getFileUrl } from 'src/common/utils/functions';
@@ -30,14 +29,30 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { id } });
   }
 
-  async findAll(pagination: PaginationDto): Promise<PaginationData<User[]>> {
-    const result = await paginate<User, null>(this.usersRepository, pagination);
-    // Використовуємо instanceToPlain для серіалізації та приховування пароля
-    const data = instanceToPlain(result.data);
+  async findAll(queryDto: SearchUsers): Promise<PaginationData<User[]>> {
+    const { page, per_page, search, role } = queryDto;
 
+    const whereCondition: any = {
+      username: search ? Like(`%${search}%`) : undefined,
+    };
+
+    if (role) {
+      whereCondition.role = role;
+    }
+
+    const [items, total] = await this.usersRepository.findAndCount({
+      skip: (page - 1) * per_page,
+      take: per_page,
+      order: {
+        id: 'DESC',
+      },
+      where: whereCondition,
+    });
+
+    const data = instanceToPlain(items);
     return {
       data: data as User[],
-      meta: result.meta,
+      meta: { total, page, per_page },
     };
   }
 
