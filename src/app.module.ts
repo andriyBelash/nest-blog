@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminModule } from './modules/admin/admin.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { GlobalFormDataInterceptor } from './common/utils/globa-form-interceptor';
 import { ConfigModule } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -20,15 +19,10 @@ import { ConfigModule } from '@nestjs/config';
       migrationsRun: false,
     }),
     AdminModule,
+    MulterModule.register(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-  ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: GlobalFormDataInterceptor,
-    },
   ],
 })
 export class AppModule {}
