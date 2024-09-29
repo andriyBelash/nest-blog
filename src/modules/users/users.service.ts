@@ -7,18 +7,20 @@ import { PaginationDto } from 'src/common/filter/paginate.dto';
 import { paginate } from 'src/common/utils/paginate.utils';
 import { instanceToPlain } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as path from 'path';
-import * as fs from 'fs';
+import { getFileUrl } from 'src/common/utils/functions';
 import * as bcrypt from 'bcrypt';
 import type { PaginationData } from 'src/common/types/Shared';
 
 @Injectable()
 export class UsersService {
+  private APP_URL: string;
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private configService: ConfigService,
-  ) {}
+  ) {
+    this.APP_URL = this.configService.get('APP_URL');
+  }
 
   async findOne(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ where: { email } });
@@ -42,21 +44,6 @@ export class UsersService {
   async update(id: number, updateData: Partial<User>): Promise<User> {
     await this.usersRepository.update(id, updateData);
     return this.findById(id);
-  }
-
-  async getFileUrl(avatar: Express.Multer.File): Promise<string | null> {
-    const appUrl = this.configService.get('APP_URL');
-    let avatarUrl: null | string = null;
-    if (avatar) {
-      const fileName = `${Date.now()}-${avatar.originalname}`;
-      const filePath = path.join('storage', 'users', fileName);
-      // Створюємо директорію, якщо вона не існує
-      await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-      await fs.promises.writeFile(filePath, avatar.buffer);
-      // Формуємо повний URL для аватара
-      avatarUrl = `${appUrl}/storage/users/${fileName}`;
-    }
-    return avatarUrl;
   }
 
   private async checkUserExistence(email: string, username: string, excludeUserId?: number): Promise<void> {
@@ -85,7 +72,7 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash('password', 10);
 
-    const avatarUrl = await this.getFileUrl(avatar);
+    const avatarUrl = await getFileUrl(avatar, this.APP_URL, 'users');
     await this.usersRepository.save({ ...body, password: hashedPassword, avatar_url: avatarUrl });
     return 'User created';
   }
@@ -101,7 +88,7 @@ export class UsersService {
     }
 
     if (file) {
-      user.avatar_url = await this.getFileUrl(file);
+      user.avatar_url = await getFileUrl(file, this.APP_URL, 'users');
     }
 
     if (body.password) {
