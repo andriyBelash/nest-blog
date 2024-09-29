@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import type { Login, TokenResponse } from 'src/common/types/Auth';
 import type { User } from 'src/entities/user.entity';
 import { Role } from 'src/common/types/enum';
+import { RegisterDto } from './dto/register';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,6 @@ export class AuthService {
   ) {}
 
   async validateUser({ email, password }: Login): Promise<any> {
-    console.log(email, password);
     const user = await this.usersService.findOne(email);
     if (!user) {
       return null;
@@ -66,5 +66,17 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  async registerUser(body: RegisterDto) {
+    await this.usersService.checkUserExistence(body.email, body.username);
+
+    const user = await this.usersService.createUser(body, null);
+    const tokens = await this.getTokens(user);
+    console.log(tokens);
+    return {
+      ...tokens,
+      user,
+    };
   }
 }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
+import { AuthAdminController } from './auth-admin.controller';
+import { AuthWebController } from './auth-web.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/common/utils/strategy/jwt.strategy';
@@ -21,7 +22,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthAdminController, AuthWebController],
   providers: [JwtStrategy, RefreshTokenStrategy, AuthService],
 })
 export class AuthModule {}

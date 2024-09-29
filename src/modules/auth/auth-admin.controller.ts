@@ -7,7 +7,7 @@ import { UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import type { Login, LoginResponse } from 'src/common/types/Auth';
 
 @AdminController('auth')
-export class AuthController {
+export class AuthAdminController {
   constructor(private authService: AuthService) {}
 
   @Post('login')

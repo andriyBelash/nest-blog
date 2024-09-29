@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Like, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { SearchUsers } from './dto/search-users.dto';
-import { instanceToPlain } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
 import { getFileUrl } from 'src/common/utils/functions';
 import * as bcrypt from 'bcrypt';
@@ -61,7 +61,7 @@ export class UsersService {
     return this.findById(id);
   }
 
-  private async checkUserExistence(email: string, username: string, excludeUserId?: number): Promise<void> {
+  public async checkUserExistence(email: string, username: string, excludeUserId?: number): Promise<void> {
     const emailQuery = this.usersRepository.createQueryBuilder('user').where('user.email = :email', { email });
     const usernameQuery = this.usersRepository
       .createQueryBuilder('user')
@@ -82,14 +82,15 @@ export class UsersService {
     }
   }
 
-  async createUser(body: CreateUserDto, avatar: Express.Multer.File) {
+  async createUser(body: CreateUserDto, avatar: Express.Multer.File): Promise<User> {
     await this.checkUserExistence(body.email, body.username);
 
     const hashedPassword = await bcrypt.hash('password', 10);
 
     const avatarUrl = await getFileUrl(avatar, this.APP_URL, 'users');
-    await this.usersRepository.save({ ...body, password: hashedPassword, avatar_url: avatarUrl });
-    return 'User created';
+    const newUser = await this.usersRepository.save({ ...body, password: hashedPassword, avatar_url: avatarUrl });
+    const userInstance = plainToInstance(User, newUser);
+    return instanceToPlain(userInstance) as User;
   }
 
   async updateUser(id: number, body: Partial<CreateUserDto>, file: Express.Multer.File) {
