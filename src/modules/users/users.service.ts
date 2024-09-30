@@ -22,7 +22,9 @@ export class UsersService {
   }
 
   async findOne(email: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository.findOne({ where: { email } });
+    const userInstance = plainToInstance(User, user);
+    return instanceToPlain(userInstance) as User;
   }
 
   async findById(id: number): Promise<User | undefined> {
