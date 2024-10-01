@@ -14,6 +14,7 @@ export class AuthWebController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() credentials: LoginDto): Promise<LoginResponse> {
+    console.log(credentials);
     const user = await this.authService.validateUser(credentials as Login);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

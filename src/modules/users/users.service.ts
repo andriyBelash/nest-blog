@@ -21,10 +21,14 @@ export class UsersService {
     this.APP_URL = this.configService.get('APP_URL');
   }
 
-  async findOne(email: string): Promise<User | undefined> {
+  async findOne(email: string, withPassword = false): Promise<User | undefined> {
     const user = await this.usersRepository.findOne({ where: { email } });
-    const userInstance = plainToInstance(User, user);
-    return instanceToPlain(userInstance) as User;
+    if (withPassword) {
+      return user;
+    } else {
+      const userInstance = plainToInstance(User, user);
+      return instanceToPlain(userInstance) as User;
+    }
   }
 
   async findById(id: number): Promise<User | undefined> {
