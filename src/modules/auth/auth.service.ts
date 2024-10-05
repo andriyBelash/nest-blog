@@ -73,7 +73,6 @@ export class AuthService {
 
     const user = await this.usersService.createUser(body, null);
     const tokens = await this.getTokens(user);
-    console.log(tokens);
     return {
       ...tokens,
       user,

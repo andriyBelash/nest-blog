@@ -81,10 +81,10 @@ export class UsersService {
     const [emailUser, usernameUser] = await Promise.all([emailQuery.getOne(), usernameQuery.getOne()]);
 
     if (emailUser) {
-      throw new HttpException('Email already exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException('email_already_exists', HttpStatus.BAD_REQUEST);
     }
     if (usernameUser) {
-      throw new HttpException('Username already exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException('username_already_exists', HttpStatus.BAD_REQUEST);
     }
   }
 

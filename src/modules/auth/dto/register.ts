@@ -1,15 +1,14 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, MinLength } from 'class-validator';
 import { Role } from 'src/common/types/enum';
 
 export class RegisterDto {
   @IsNotEmpty()
   username: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'invalid_email_format' })
   email: string;
 
-  @IsString()
-  @MinLength(6)
+  @MinLength(6, { message: 'min_length_6' })
   password: string;
 
   @IsEnum(Role)

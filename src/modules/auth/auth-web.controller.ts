@@ -3,9 +3,9 @@ import { WebController } from 'src/common/utils/controllers';
 import { LoginDto } from './dto/login';
 import { RefreshTokenDto } from './dto/refersh';
 import { AuthService } from './auth.service';
-import { UnauthorizedException, ForbiddenException } from '@nestjs/common';
-import type { Login, LoginResponse } from 'src/common/types/Auth';
+import { UnauthorizedException } from '@nestjs/common';
 import { RegisterDto } from './dto/register';
+import type { Login, LoginResponse } from 'src/common/types/Auth';
 
 @WebController('auth')
 export class AuthWebController {
@@ -14,15 +14,9 @@ export class AuthWebController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() credentials: LoginDto): Promise<LoginResponse> {
-    console.log(credentials);
     const user = await this.authService.validateUser(credentials as Login);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isAdmin = await this.authService.validateAdminUser(user);
-    if (!isAdmin) {
-      throw new ForbiddenException('Access denied. Admin role required.');
+      throw new UnauthorizedException('invalid_credentials');
     }
     const tokens = await this.authService.login(user);
     return {

@@ -2,9 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
     cors: true,
     bodyParser: true,
@@ -20,6 +22,9 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  app.useStaticAssets(join(__dirname, '..', 'storage'), {
+    prefix: '/storage/',
+  });
   await app.listen(3000);
 }
 bootstrap();
