@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import { slugify as translitSlugify } from 'transliteration';
 
 export async function getFileUrl(
   avatar: Express.Multer.File,
@@ -18,3 +19,12 @@ export async function getFileUrl(
   }
   return avatarUrl;
 }
+
+export const slugify = (title: string) => {
+  const slug = translitSlugify(title);
+  return slug
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-+/g, '-');
+};

@@ -11,5 +11,6 @@ import { UsersService } from 'src/modules/users/users.service';
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [ProfileController],
   providers: [JwtService, ConfigService, ProfileService, UsersService],
+  exports: [ProfileService],
 })
 export class ProfileModule {}
