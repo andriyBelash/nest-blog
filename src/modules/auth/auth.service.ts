@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 
 import type { Login, TokenResponse } from 'src/common/types/Auth';
 import type { User } from 'src/entities/user.entity';
@@ -77,5 +78,27 @@ export class AuthService {
       ...tokens,
       user,
     };
+  }
+
+  addRefreshTokenToResponse(res: Response, refreshToken: string) {
+    const expiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      expires: expiresIn,
+      domain: 'localhost',
+      secure: true,
+      sameSite: 'none',
+    });
+  }
+
+  removeRefreshTokenFromResponse(res: Response) {
+    res.cookie('refresh_token', '', {
+      httpOnly: true,
+      expires: new Date(0),
+      domain: 'localhost',
+      secure: true,
+      sameSite: 'none',
+    });
   }
 }

@@ -4,14 +4,20 @@ import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
-    cors: true,
     bodyParser: true,
   });
-  app.enableCors();
+
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true,
+    exposedHeaders: 'set-cookie',
+  });
+
   app.setGlobalPrefix('api');
   app.useLogger(['log', 'debug', 'error', 'warn', 'verbose']);
   app.use(express.urlencoded({ extended: true }));
@@ -25,6 +31,8 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'storage'), {
     prefix: '/storage/',
   });
+  app.use(cookieParser());
+  app.use(express.json());
   await app.listen(3000);
 }
 bootstrap();

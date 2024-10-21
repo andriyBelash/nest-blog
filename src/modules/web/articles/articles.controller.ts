@@ -3,9 +3,11 @@ import {
   FileTypeValidator,
   ParseFilePipe,
   Post,
+  Get,
   Req,
   UploadedFile,
   UseGuards,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { WebController } from 'src/common/utils/controllers';
@@ -14,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { ArticlesService } from './articles.service';
 import { ProfileService } from '../profile/profile.service';
+import { QueryDto } from './dto/query.dto';
 
 @WebController('articles')
 export class ArticlesController {
@@ -39,5 +42,10 @@ export class ArticlesController {
     const token = req.headers['authorization'].split(' ')[1];
     const user = await this.profileService.getProfile(token);
     return await this.articlesService.createArticle(user.id, body, file);
+  }
+
+  @Get('all')
+  async getAllArticles(@Query() query: QueryDto) {
+    return await this.articlesService.findAll(query);
   }
 }

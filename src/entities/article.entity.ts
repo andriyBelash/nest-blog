@@ -1,5 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { ArticleStatus } from '../common/types/enum';
+import { User } from './user.entity';
 
 @Entity('articles')
 export class Article {
@@ -20,6 +29,10 @@ export class Article {
 
   @Column()
   user_id: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column({
     default: () => ArticleStatus.PUBLISHED,
