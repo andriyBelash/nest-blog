@@ -1,6 +1,5 @@
 import { PaginationDto } from 'src/common/filter/paginate.dto';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ArticleStatus } from 'src/common/types/enum';
+import { IsOptional, IsString } from 'class-validator';
 
 export class QueryDto extends PaginationDto {
   @IsOptional()
@@ -8,8 +7,7 @@ export class QueryDto extends PaginationDto {
   search: string;
 
   @IsOptional()
-  @IsEnum(ArticleStatus)
-  status: ArticleStatus;
+  status: string;
 
   @IsOptional()
   @IsString()

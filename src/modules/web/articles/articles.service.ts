@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from 'src/entities/article.entity';
 import { Like, Repository } from 'typeorm';
@@ -38,6 +38,23 @@ export class ArticlesService {
     return article;
   }
 
+  async updateArticle(id: number, body: CreateArticleDto, file?: Express.Multer.File) {
+    const article = await this.articlesRepository.findOne({ where: { id } });
+    if (!article) throw new NotFoundException('Статті не знайдено');
+    if (file) {
+      const logo = await getFileUrl(file, this.APP_URL, 'articles');
+      Object.assign(body, { logo });
+    }
+    const updatedArticle = this.articlesRepository.merge(article, body);
+    return await this.articlesRepository.save(updatedArticle);
+  }
+
+  async deleteArticle(id: number) {
+    const article = await this.articlesRepository.findOne({ where: { id } });
+    if (!article) throw new NotFoundException('Статті не знайдено');
+    return await this.articlesRepository.remove(article);
+  }
+
   async findAll(queryDto: QueryDto) {
     const { search, status, user_id } = queryDto;
 
@@ -48,7 +65,7 @@ export class ArticlesService {
       title: search ? Like(`%${search}%`) : undefined,
     };
 
-    whereCondition.status = status ? status : ArticleStatus.PUBLISHED;
+    whereCondition.status = status && status !== 'all' ? status : undefined;
     whereCondition.user_id = user_id ? user_id : undefined;
 
     const [items, total] = await this.articlesRepository.findAndCount({
@@ -71,5 +88,9 @@ export class ArticlesService {
       data: articles,
       meta: { total, page, per_page },
     };
+  }
+
+  findOne(slug: string) {
+    return this.articlesRepository.findOne({ where: { slug } });
   }
 }
