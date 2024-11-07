@@ -8,8 +8,9 @@ import { ArticlesService } from './articles.service';
 import { ProfileService } from '../profile/profile.service';
 import { UsersService } from 'src/modules/users/users.service';
 import { User } from 'src/entities/user.entity';
+import { Category } from 'src/entities/articles_category.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Article, User])],
+  imports: [TypeOrmModule.forFeature([Article, User, Category])],
   controllers: [ArticlesController],
   providers: [JwtService, ConfigService, ArticlesService, ProfileService, UsersService],
 })

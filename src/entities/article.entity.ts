@@ -6,9 +6,12 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { ArticleStatus } from '../common/types/enum';
 import { User } from './user.entity';
+import { Category } from './articles_category.entity';
 
 @Entity('articles')
 export class Article {
@@ -49,4 +52,18 @@ export class Article {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToMany(() => Category)
+  @JoinTable({
+    name: 'article_categories',
+    joinColumn: {
+      name: 'article_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'category_id',
+      referencedColumnName: 'id',
+    },
+  })
+  categories: Category[];
 }

@@ -2,7 +2,6 @@ import { Body, Post, HttpCode, HttpStatus, Res, Req, HttpException } from '@nest
 import { WebController } from 'src/common/utils/controllers';
 import { LoginDto } from './dto/login';
 import { AuthService } from './auth.service';
-import { UnauthorizedException } from '@nestjs/common';
 import { RegisterDto } from './dto/register';
 import type { Login, LoginResponse } from 'src/common/types/Auth';
 import type { Response, Request } from 'express';
@@ -19,7 +18,7 @@ export class AuthWebController {
   ): Promise<Partial<LoginResponse>> {
     const user = await this.authService.validateUser(credentials as Login);
     if (!user) {
-      throw new UnauthorizedException('invalid_credentials');
+      throw new HttpException('Такого користувача не існує', HttpStatus.BAD_REQUEST);
     }
     const tokens = await this.authService.login(user);
 
